@@ -12,8 +12,31 @@ This project demonstrates advanced **Object-Oriented Programming (OOP)** princip
 - ✅ Type-safe development with `@types/google.maps`
 - ✅ Secure API key management using Parcel environment variables
 - ✅ Dynamic Google Maps script loading
-- ✅ Automatic InfoWindow management (only one open at a time)
-- ✅ Easy to extend with any custom domain model (User, Company, Store, etc.)
+- ✅ Automatic InfoWindow handling
+- ✅ Easy extension with any custom domain model (`User`, `Company`, `Store`, etc.)
+- ✅ Uses Faker.js for generating realistic mock data
+
+---
+
+# 🌱 Why Open Source?
+
+This project was originally created as part of my learning journey while exploring TypeScript, Object-Oriented Programming, and software design principles.
+
+During this process, I implemented concepts like:
+
+- Interfaces and contracts
+- Inversion of Control (IoC)
+- Dependency Inversion Principle
+- Loose coupling
+- Reusable architecture patterns
+- Working with external APIs
+- Environment variable management
+
+I decided to open-source this project because I believe this implementation can help other developers who are learning similar concepts.
+
+My goal is to share a practical example of how these concepts can be applied in a real-world project structure.
+
+Feel free to explore, learn from it, improve it, and contribute.
 
 ---
 
@@ -27,7 +50,6 @@ This project demonstrates advanced **Object-Oriented Programming (OOP)** princip
 ├── .env
 ├── .env.example
 ├── .gitignore
-├── index.html
 ├── package.json
 └── README.md
 ```
@@ -36,32 +58,39 @@ This project demonstrates advanced **Object-Oriented Programming (OOP)** princip
 
 # 📄 File Description
 
-### `src/CustomMap.ts`
+## `src/CustomMap.ts`
 
-Contains the Google Maps wrapper class and the `Mappable` interface.
+This is the core of the project.
 
-The map never depends on domain-specific classes—it only knows about the `Mappable` contract.
+It contains:
+
+- The `Mappable` interface
+- The `CustomMap` wrapper class
+- Marker creation logic
+- InfoWindow handling
+
+The map does not depend on any specific application class. It only depends on the `Mappable` contract.
 
 ---
 
-### `src/index.ts`
+## `src/index.ts`
 
 Application entry point.
 
-Responsibilities include:
+Responsibilities:
 
 - Loading Google Maps dynamically
-- Reading the API key from environment variables
-- Creating sample objects
-- Rendering markers on the map
+- Reading environment variables
+- Creating example implementations
+- Adding markers to the map
 
 ---
 
-### `.env`
+## `.env`
 
-Stores your local Google Maps API Key.
+Stores your local Google Maps API key.
 
-**Never commit this file to GitHub.**
+⚠️ Never commit this file.
 
 Example:
 
@@ -71,9 +100,9 @@ PARCEL_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
 
 ---
 
-### `.env.example`
+## `.env.example`
 
-Template file for contributors.
+Example configuration file for contributors.
 
 ```env
 PARCEL_GOOGLE_MAPS_API_KEY=
@@ -81,21 +110,9 @@ PARCEL_GOOGLE_MAPS_API_KEY=
 
 ---
 
-### `index.html`
-
-Minimal HTML page used by Parcel to bootstrap the application.
-
----
-
-### `package.json`
-
-Contains project metadata, dependencies, and development scripts.
-
----
-
 # ⚙️ Installation
 
-## 1. Clone the repository
+## 1. Clone Repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
@@ -105,7 +122,7 @@ cd YOUR_REPOSITORY
 
 ---
 
-## 2. Install dependencies
+## 2. Install Dependencies
 
 ```bash
 npm install
@@ -113,9 +130,9 @@ npm install
 
 ---
 
-## 3. Configure environment variables
+## 3. Configure Environment Variables
 
-Create a `.env` file in the project root.
+Create a `.env` file in the root directory.
 
 ```env
 PARCEL_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
@@ -123,13 +140,13 @@ PARCEL_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
 
 ---
 
-## 4. Start the development server
+## 4. Run Development Server
 
 ```bash
 npx parcel index.html
 ```
 
-Open your browser:
+Open:
 
 ```
 http://localhost:1234
@@ -137,240 +154,175 @@ http://localhost:1234
 
 ---
 
-# 🏗️ Architecture
+# 🏗️ Core Architecture
 
-The project follows the **Inversion of Control (IoC)** principle.
+The heart of this project is the `CustomMap.ts` file.
 
-Instead of depending on specific classes like:
+Instead of creating separate logic for every entity, the map follows a contract using the `Mappable` interface.
+
+```ts
+export interface Mappable {
+
+  location:{
+    lat:number;
+    lng:number;
+  };
+
+  markerContent():string;
+}
+```
+
+Any class implementing this interface can be added to the map.
+
+Examples:
 
 - User
 - Company
+- Restaurant
+- Hotel
 - Store
 
-the map only depends on the `Mappable` interface.
+---
 
-```ts
-export interface Mappable {
-  location: {
-    lat: number;
-    lng: number;
-  };
-
-  markerContent(): string;
-}
-```
-
-Any class implementing this interface can be displayed on the map.
-
-Example:
-
-```ts
-class User implements Mappable {
-  location = {
-    lat: 28.6139,
-    lng: 77.2090
-  };
-
-  markerContent(): string {
-    return "<h3>User Location</h3>";
-  }
-}
-```
-
-Then simply add it to the map:
-
-```ts
-const map = new CustomMap("map");
-
-const user = new User();
-
-map.addMarker(user);
-```
-# 🏗️ Core Architecture
-
-The heart of this project is the **`src/CustomMap.ts`** file.
-
-Rather than depending on specific domain classes like `User`, `Company`, or `Store`, the map relies on a single **`Mappable` interface**. Any class that implements this interface can be rendered on the map without modifying the `CustomMap` class.
-
-```ts
-export interface Mappable {
-  location: {
-    lat: number;
-    lng: number;
-  };
-
-  markerContent(): string;
-}
-```
-
-The `CustomMap` class is responsible for:
-
-- Initializing the Google Maps instance
-- Creating markers
-- Listening for marker click events
-- Displaying an `InfoWindow`
-- Remaining completely independent of application-specific classes
+## CustomMap Implementation
 
 ```ts
 export class CustomMap {
-  private googleMap: google.maps.Map;
 
-  constructor(divId: string) {
-    this.googleMap = new google.maps.Map(
-      document.getElementById(divId) as HTMLElement,
-      {
-        zoom: 1,
-        center: {
-          lat: 0,
-          lng: 0,
-        },
-      }
-    );
-  }
+private googleMap:google.maps.Map;
 
-  addMarker(mappable: Mappable): void {
-    const marker = new google.maps.Marker({
-      map: this.googleMap,
-      position: {
-        lat: mappable.location.lat,
-        lng: mappable.location.lng,
-      },
-    });
+constructor(divId:string){
 
-    marker.addListener("click", () => {
-      const infoWindow = new google.maps.InfoWindow({
-        content: mappable.markerContent(),
-      });
+this.googleMap = new google.maps.Map(
+document.getElementById(divId) as HTMLElement,
+{
+zoom:1,
+center:{
+lat:0,
+lng:0
+}
+});
 
-      infoWindow.open(this.googleMap, marker);
-    });
-  }
+}
+
+
+addMarker(mappable:Mappable):void{
+
+const marker = new google.maps.Marker({
+
+map:this.googleMap,
+
+position:{
+lat:mappable.location.lat,
+lng:mappable.location.lng
+}
+
+});
+
+
+marker.addListener("click",()=>{
+
+const infoWindow = new google.maps.InfoWindow({
+
+content:mappable.markerContent()
+
+});
+
+
+infoWindow.open(
+this.googleMap,
+marker
+);
+
+});
+
+}
+
 }
 ```
 
-Because `CustomMap` only depends on the `Mappable` interface, you can easily create your own classes:
-
-- `User`
-- `Company`
-- `Restaurant`
-- `Hotel`
-- `Store`
-- or any custom model
-
-Simply implement the `Mappable` interface and pass the object to `addMarker()`.
-
-This design follows the **Dependency Inversion Principle (DIP)** and **Inversion of Control (IoC)**, making the project reusable, maintainable, and easy to extend.
-
 ---
 
-# 🔐 Secure API Keys
-
-This project **does not hardcode** Google Maps API keys.
-
-Instead, Parcel injects the key from an environment variable.
-
-```ts
-const apiKey = process.env.PARCEL_GOOGLE_MAPS_API_KEY;
-```
-
-This ensures:
-
-- API keys stay private
-- `.env` remains local
-- Safe GitHub repositories
-- Easy deployment
-
----
-
-# 🧠 Dynamic Google Maps Loading
-
-Instead of including the Google Maps script inside `index.html`, it is loaded dynamically.
-
-Benefits:
-
-- Prevents `google is not defined` errors
-- Loads only when needed
-- Cleaner application startup
-- Better separation of concerns
-
----
-
-# 💬 Smart InfoWindows
-
-The wrapper maintains a single reusable `InfoWindow`.
-
-Whenever another marker is clicked:
-
-- Previous popup closes automatically
-- New popup opens
-- Prevents multiple overlapping windows
-
----
-
-# 📦 Technologies Used
-
-- TypeScript
-- Google Maps JavaScript API
-- Parcel Bundler
-- Node.js
-- HTML5
-
----
-
-# 💡 Example
-
-```ts
-const map = new CustomMap("map");
-
-const user = new User(
-  "Rahul",
-  28.6139,
-  77.2090
-);
-
-map.addMarker(user);
-```
-
----
-
-# 🎯 Learning Concepts
+# 🧠 Design Principles Used
 
 This project demonstrates:
 
 - Object-Oriented Programming (OOP)
 - Interfaces
 - Inversion of Control (IoC)
-- Dependency Inversion Principle
+- Dependency Inversion Principle (DIP)
 - Loose Coupling
-- TypeScript Generics & Types
-- Google Maps API
-- Environment Variables
-- Dynamic Script Loading
-- Event Handling
+- Separation of Concerns
+- Reusable Components
+- Type Safety
 
 ---
 
-# 📝 Note
+# 🔐 Secure API Key Management
 
-This repository **does not include an `index.html` file** by default to keep the project flexible and easy to integrate into existing applications.
+Google Maps API keys are not hardcoded.
 
-You can create your own `index.html` based on your project requirements.
+Instead, Parcel loads them from environment variables.
 
-### Example
+```ts
+const apiKey = process.env.PARCEL_GOOGLE_MAPS_API_KEY;
+```
+
+Benefits:
+
+- API keys remain private
+- `.env` stays local
+- Safer GitHub repositories
+- Easier deployment
+
+---
+
+# 🧠 Dynamic Google Maps Loading
+
+The Google Maps script is loaded dynamically instead of directly adding it to HTML.
+
+Benefits:
+
+- Prevents `google is not defined` errors
+- Cleaner application startup
+- Better control over loading process
+
+---
+
+# 💬 InfoWindow Management
+
+Each marker click creates an InfoWindow containing custom content.
+
+This allows every model implementing `Mappable` to control its own marker information.
+
+---
+
+# 📝 Customization
+
+This repository does not include an `index.html` file by default to keep the project flexible.
+
+You can create your own HTML file according to your application requirements.
+
+Example:
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custom Mappable Map</title>
-</head>
-<body>
-  <div id="map" style="width:100%; height:100vh;"></div>
 
-  <script src="./src/index.ts" type="module"></script>
+<html>
+
+<head>
+<title>Custom Mappable Map</title>
+</head>
+
+<body>
+
+<div id="map" style="height:100vh;width:100%">
+</div>
+
+<script src="./src/index.ts" type="module"></script>
+
 </body>
+
 </html>
 ```
 
@@ -378,55 +330,100 @@ You can create your own `index.html` based on your project requirements.
 
 # 🔑 Google Maps API Setup
 
-This project loads the Google Maps JavaScript API dynamically using an environment variable.
+Create a Google Maps API key:
 
-Create a `.env` file in the project root:
+https://developers.google.com/maps/documentation/javascript/get-api-key
+
+
+Add it to your `.env`:
 
 ```env
 PARCEL_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
 ```
 
-Then the API key is injected automatically:
+The application will load Google Maps automatically:
 
 ```ts
-const apiKey = process.env.PARCEL_GOOGLE_MAPS_API_KEY;
+const script=document.createElement("script");
 
-const script = document.createElement("script");
-script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
-script.async = true;
-script.defer = true;
+script.src=
+`https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+
+script.async=true;
+script.defer=true;
 
 document.head.appendChild(script);
 ```
 
-> **Need a Google Maps API key?**
->
-> Visit the Google Maps Platform documentation:
->
-> https://developers.google.com/maps/documentation/javascript/get-api-key
+---
+
+# 📦 Technologies Used
+
+- TypeScript
+- Google Maps JavaScript API
+- Parcel
+- Node.js
+- Faker.js
 
 ---
 
-# ⚠️ Important
-
-Before using the Maps JavaScript API:
-
-- Enable **Maps JavaScript API** in your Google Cloud project.
-- Create an API key.
-- (Recommended) Restrict the API key by HTTP referrers for better security.
-- Add the key to your local `.env` file.
-
 # 🙏 Acknowledgements
 
-This project uses the following open-source libraries and services:
+## Google Maps JavaScript API
 
-# Google Maps JavaScript API
-Provides the interactive mapping functionality.
+Used for:
+
+- Interactive maps
+- Markers
+- Events
+- InfoWindows
+
 https://developers.google.com/maps/documentation/javascript
-# Faker.js  
-Used to generate realistic random data (such as names, locations, and other mock data) for demonstration and development purposes.
+
+
+## Faker.js
+
+Used to generate realistic fake data such as:
+
+- Names
+- Locations
+- Companies
+- Random mock information
+
 https://fakerjs.dev/
 
-Special thanks to the maintainers and contributors of these projects for making them freely available to the developer community.
 
-## ⭐ If you found this project helpful, consider giving it a star on GitHub!
+Special thanks to all open-source contributors who make these tools available for developers.
+
+---
+
+# ⚠️ Disclaimer
+
+This project is created for educational and demonstration purposes.
+
+I do not take responsibility for:
+
+- Incorrect configuration or usage
+- Third-party API costs or limitations
+- Data accuracy from external services
+- Modifications made after forking this project
+
+Users are responsible for:
+
+- Managing their own API keys
+- Following third-party service policies
+- Reviewing and adapting the code for their own requirements
+
+Use this project at your own discretion.
+
+---
+
+# 📜 License
+
+This project is licensed under the MIT License.
+
+See the `LICENSE` file for more information.
+
+---
+
+⭐ If this project helped you understand TypeScript architecture or Google Maps integration, consider giving it a star!
