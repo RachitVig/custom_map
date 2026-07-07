@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+
+# Bundler caches & production outputs (Parcel)
+.parcel-cache/
+dist/
+
+# Environment variables (SABSE ZAROORI - Key safe rakhne ke liye)
+.env
+.env.local
+.env.*.local
+
+# Operating System files
+.DS_Store
+Thumbs.db
+*.log
+index.html
