@@ -416,4 +416,17 @@ Before using the Maps JavaScript API:
 - (Recommended) Restrict the API key by HTTP referrers for better security.
 - Add the key to your local `.env` file.
 
+# 🙏 Acknowledgements
+
+This project uses the following open-source libraries and services:
+
+# Google Maps JavaScript API
+Provides the interactive mapping functionality.
+https://developers.google.com/maps/documentation/javascript
+# Faker.js  
+Used to generate realistic random data (such as names, locations, and other mock data) for demonstration and development purposes.
+https://fakerjs.dev/
+
+Special thanks to the maintainers and contributors of these projects for making them freely available to the developer community.
+
 ## ⭐ If you found this project helpful, consider giving it a star on GitHub!
