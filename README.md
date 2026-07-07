@@ -186,6 +186,80 @@ const user = new User();
 
 map.addMarker(user);
 ```
+# 🏗️ Core Architecture
+
+The heart of this project is the **`src/CustomMap.ts`** file.
+
+Rather than depending on specific domain classes like `User`, `Company`, or `Store`, the map relies on a single **`Mappable` interface**. Any class that implements this interface can be rendered on the map without modifying the `CustomMap` class.
+
+```ts
+export interface Mappable {
+  location: {
+    lat: number;
+    lng: number;
+  };
+
+  markerContent(): string;
+}
+```
+
+The `CustomMap` class is responsible for:
+
+- Initializing the Google Maps instance
+- Creating markers
+- Listening for marker click events
+- Displaying an `InfoWindow`
+- Remaining completely independent of application-specific classes
+
+```ts
+export class CustomMap {
+  private googleMap: google.maps.Map;
+
+  constructor(divId: string) {
+    this.googleMap = new google.maps.Map(
+      document.getElementById(divId) as HTMLElement,
+      {
+        zoom: 1,
+        center: {
+          lat: 0,
+          lng: 0,
+        },
+      }
+    );
+  }
+
+  addMarker(mappable: Mappable): void {
+    const marker = new google.maps.Marker({
+      map: this.googleMap,
+      position: {
+        lat: mappable.location.lat,
+        lng: mappable.location.lng,
+      },
+    });
+
+    marker.addListener("click", () => {
+      const infoWindow = new google.maps.InfoWindow({
+        content: mappable.markerContent(),
+      });
+
+      infoWindow.open(this.googleMap, marker);
+    });
+  }
+}
+```
+
+Because `CustomMap` only depends on the `Mappable` interface, you can easily create your own classes:
+
+- `User`
+- `Company`
+- `Restaurant`
+- `Hotel`
+- `Store`
+- or any custom model
+
+Simply implement the `Mappable` interface and pass the object to `addMarker()`.
+
+This design follows the **Dependency Inversion Principle (DIP)** and **Inversion of Control (IoC)**, making the project reusable, maintainable, and easy to extend.
 
 ---
 
