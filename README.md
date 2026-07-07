@@ -20,23 +20,17 @@ This project demonstrates advanced **Object-Oriented Programming (OOP)** princip
 
 # 🌱 Why Open Source?
 
-This project was originally created as part of my learning journey while exploring TypeScript, Object-Oriented Programming, and software design principles.
+This project started as a learning implementation while exploring TypeScript, Object-Oriented Programming, and software design principles.
 
-During this process, I implemented concepts like:
+During this process, I built a reusable wrapper around the Google Maps JavaScript API using concepts like Interfaces, Inversion of Control (IoC), and clean architecture.
 
-- Interfaces and contracts
-- Inversion of Control (IoC)
-- Dependency Inversion Principle
-- Loose coupling
-- Reusable architecture patterns
-- Working with external APIs
-- Environment variable management
+After completing the implementation, I decided to open-source this project because I believe this wrapper can be useful for other developers who want a simple, reusable, and maintainable way to integrate Google Maps into their applications.
 
-I decided to open-source this project because I believe this implementation can help other developers who are learning similar concepts.
+The goal of this project is to provide a practical solution that developers can use, customize, and extend according to their own requirements.
 
-My goal is to share a practical example of how these concepts can be applied in a real-world project structure.
+Feel free to use it, modify it, and contribute to make it better.
 
-Feel free to explore, learn from it, improve it, and contribute.
+---
 
 ---
 
